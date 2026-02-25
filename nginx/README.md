@@ -1,0 +1,124 @@
+# VerterCloud High-Performance Nginx Configuration
+
+Esta configuración está diseñada para manejar miles de solicitudes por segundo, optimizada para el modelo IaaS de VerterCloud y preparada para operar detrás de un proxy de **Cloudflare**.
+
+## Estructura de Archivos
+
+- `nginx.conf`: Configuración global optimizada (Worker connections, buffers, compresión).
+- `conf.d/default.conf`: Configuración del servidor (Real-IP de Cloudflare, Caché, Seguridad).
+
+## Requisitos Previos
+
+- Nginx instalado o Docker.
+- Los archivos estáticos de la landing page generados en la carpeta `dist/` (`npm run build`).
+
+---
+
+## Opción 1: Despliegue con Docker (Recomendado)
+
+Crea un `Dockerfile` en la raíz del proyecto para empaquetar la configuración y el contenido:
+
+```dockerfile
+# Dockerfile
+FROM nginx:alpine
+
+# Copiar configuraciones
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+# Copiar contenido estático (asegúrate de haber corrido npm run build)
+COPY dist /usr/share/nginx/html
+
+# Exponer puerto
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+### Comandos de construcción:
+
+1. `npm run build`
+2. `docker build -t verter-landing .`
+3. `docker run -d -p 80:80 --name verter-landing verter-landing`
+
+---
+
+## Opción 2: Servidor con Múltiples Proyectos (Recomendado para VPS compartidos)
+
+Si ya tienes otros sitios funcionando en Nginx, **no sobrescribas** el archivo `nginx.conf` global. En su lugar, usa un enfoque modular:
+
+1. **Configuración del Sitio**:
+   Copia el archivo `default.conf` a `sites-available` con un nombre único:
+
+   ```bash
+   cp nginx/conf.d/default.conf /etc/nginx/sites-available/verter-landing.conf
+   ```
+
+2. **Habilitar el Sitio**:
+   Crea un enlace simbólico a `sites-enabled`:
+
+   ```bash
+   ln -s /etc/nginx/sites-available/verter-landing.conf /etc/nginx/sites-enabled/
+   ```
+
+3. **Optimización Global (Opcional)**:
+   Si deseas aplicar el alto rendimiento (miles de req/s) a todo tu servidor, abre tu `/etc/nginx/nginx.conf` actual y ajusta estos valores basándote en nuestro `nginx/nginx.conf`:
+   - `worker_connections 65535;` (Asegúrate de que el límite de archivos del sistema - `ulimit` - lo permita).
+   - `keepalive_timeout 65;`
+   - `gzip` settings.
+
+---
+
+## Opción 3: Instalación Directa (Servidor Dedicado)
+
+1. **Copiar archivos**:
+   Copia el contenido de `nginx/` al directorio de configuración de Nginx (usualmente `/etc/nginx/`).
+
+   ```bash
+   cp nginx/nginx.conf /etc/nginx/nginx.conf
+   cp nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+   ```
+
+2. **Cargar contenido**:
+   Copia los archivos generados en `dist/` a la ruta definida en `default.conf` (`/usr/share/nginx/html`).
+
+   ```bash
+   cp -r dist/* /usr/share/nginx/html/
+   ```
+
+3. **Verificar y Reiniciar**:
+   ```bash
+   nginx -t          # Verifica que la sintaxis sea correcta
+   systemctl restart nginx
+   ```
+
+---
+
+## Características de Rendimiento
+
+### 1. Integración con Cloudflare (Real-IP)
+
+Nginx está configurado para leer la cabecera `CF-Connecting-IP`. Esto asegura que tus logs muestren la IP real del visitante y no las del servidor proxy de Cloudflare.
+
+> [!IMPORTANT]
+> Los rangos de IP en `conf.d/default.conf` están actualizados a Febrero 2026. Si Cloudflare actualiza sus rangos, deberás actualizarlos allí.
+
+### 2. Caché Agresiva
+
+Los archivos estáticos (`.js`, `.css`, imágenes) se sirven con una cabecera de caché de **1 año**. Esto reduce drásticamente las solicitudes al servidor una vez que el usuario ha cargado el sitio.
+
+### 3. Seguridad Hardened
+
+- **HSTS**: Obliga el uso de HTTPS.
+- **Rate Limiting**: Configurado a 100 req/s con burst de 50 para evitar ataques de denegación de servicio (DoS) a nivel de servidor local.
+- **Security Headers**: Protección contra XSS, sniff de tipos y frames no autorizados.
+
+### 4. Alta Concurrencia
+
+Configurado con `worker_connections 65535` para soportar tráfico masivo simultáneo.
+
+---
+
+## Monitoreo de Salud
+
+Puedes verificar el estado del servidor accediendo a la ruta `/health`. Debería devolver un código `200` con el texto `healthy`.
