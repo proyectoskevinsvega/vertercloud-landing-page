@@ -98,11 +98,19 @@ Si ya tienes otros sitios funcionando en Nginx, **no sobrescribas** el archivo `
 
 Si prefieres usar la ruta estándar de servidores Debian/Ubuntu/CentOS:
 
-1. **Crear Directorio y Copiar Contenido**:
+1. **Descargar Proyecto y Compilar**:
 
    ```bash
+   # Crear directorio y entrar
    sudo mkdir -p /var/www/verter-landing
-   sudo cp -r dist/* /var/www/verter-landing/
+   cd /var/www/verter-landing
+
+   # Clonar el repositorio
+   sudo git clone https://github.com/proyectoskevinsvega/vertercloud-landing-page.git .
+
+   # Instalar y compilar (Asegúrate de tener Node.js instalado)
+   sudo npm install
+   sudo npm run build
    ```
 
 2. **Ajustar Permisos (Crucial)**:
