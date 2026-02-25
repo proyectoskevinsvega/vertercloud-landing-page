@@ -94,6 +94,52 @@ Si ya tienes otros sitios funcionando en Nginx, **no sobrescribas** el archivo `
 
 ---
 
+## Opción 4: Servidor Linux con Directorio Estándar (/var/www)
+
+Si prefieres usar la ruta estándar de servidores Debian/Ubuntu/CentOS:
+
+1. **Crear Directorio y Copiar Contenido**:
+
+   ```bash
+   sudo mkdir -p /var/www/verter-landing
+   sudo cp -r dist/* /var/www/verter-landing/
+   ```
+
+2. **Ajustar Permisos (Crucial)**:
+   Asegúrate de que el usuario de Nginx (usualmente `www-data` o `nginx`) tenga acceso de lectura:
+
+   ```bash
+   # Cambiar propietario al usuario del servidor web
+   sudo chown -R www-data:www-data /var/www/verter-landing
+
+   # Ajustar permisos: Directorios (755) y Archivos (644)
+   sudo find /var/www/verter-landing -type d -exec chmod 755 {} \;
+   sudo find /var/www/verter-landing -type f -exec chmod 644 {} \;
+   ```
+
+3. **Actualizar Ruta en `conf.d/default.conf`**:
+   Abre el archivo `nginx/conf.d/default.conf` y cambia la línea `root`:
+
+   ```nginx
+   # Antes
+   root /usr/share/nginx/html;
+
+   # Después (ajustado a tu nueva ruta)
+   root /var/www/verter-landing;
+   ```
+
+---
+
+## Verificación de Permisos
+
+Si ves un error **403 Forbidden**, verifica que el usuario de Nginx tenga permisos de ejecución en toda la ruta jerárquica:
+
+```bash
+sudo namei -om /var/www/verter-landing
+```
+
+---
+
 ## Características de Rendimiento
 
 ### 1. Integración con Cloudflare (Real-IP)
