@@ -75,7 +75,7 @@ El proyecto incluye páginas dedicadas y validadas profesionalmente para la juri
 Para un despliegue optimizado, consulte la carpeta `/nginx` donde encontrará:
 
 - `nginx.conf`: Configuración global para miles de RPS.
-- `default.conf`: Integración con Real-IP de Cloudflare y cabeceras de seguridad.
+- `verter-landing.conf`: Integración con Real-IP de Cloudflare y cabeceras de seguridad.
 
 ---
 

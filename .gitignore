@@ -1,5 +1,4 @@
 # Production configuration
-digitalocean.txt
 logs
 *.log
 npm-debug.log*
@@ -26,3 +25,4 @@ dist-ssr
 polices.txt
 polices
 digitalocean.txt
+digitalocean

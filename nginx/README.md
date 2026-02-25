@@ -5,7 +5,7 @@ Esta configuración está diseñada para manejar miles de solicitudes por segund
 ## Estructura de Archivos
 
 - `nginx.conf`: Configuración global optimizada (Worker connections, buffers, compresión).
-- `conf.d/default.conf`: Configuración del servidor (Real-IP de Cloudflare, Caché, Seguridad).
+- `conf.d/verter-landing.conf`: Configuración del servidor (Real-IP de Cloudflare, Caché, Seguridad).
 
 ## Requisitos Previos
 
@@ -24,7 +24,7 @@ FROM nginx:alpine
 
 # Copiar configuraciones
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/conf.d/verter-landing.conf /etc/nginx/conf.d/verter-landing.conf
 
 # Copiar contenido estático (asegúrate de haber corrido npm run build)
 COPY dist /usr/share/nginx/html
@@ -51,7 +51,7 @@ Dado que tu servidor ya gestiona múltiples servicios (como `headscale`, `verter
    Copia el archivo de configuración a la carpeta de sitios disponibles con un nombre descriptivo:
 
    ```bash
-   sudo cp nginx/conf.d/default.conf /etc/nginx/sites-available/verter-landing.conf
+   sudo cp nginx/conf.d/verter-landing.conf /etc/nginx/sites-available/verter-landing.conf
    ```
 
 2. **Habilitar el Sitio**:
