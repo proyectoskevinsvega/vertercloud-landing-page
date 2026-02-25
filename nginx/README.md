@@ -43,29 +43,32 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ---
 
-## Opción 2: Servidor con Múltiples Proyectos (Recomendado para VPS compartidos)
+## Opción 2: Integración en Servidor con Múltiples Sitios (sites-available)
 
-Si ya tienes otros sitios funcionando en Nginx, **no sobrescribas** el archivo `nginx.conf` global. En su lugar, usa un enfoque modular:
+Dado que tu servidor ya gestiona múltiples servicios (como `headscale`, `verter-frontend`, etc.), seguiremos tu estructura estándar:
 
-1. **Configuración del Sitio**:
-   Copia el archivo `default.conf` a `sites-available` con un nombre único:
+1. **Crear Configuración del Sitio**:
+   Copia el archivo de configuración a la carpeta de sitios disponibles con un nombre descriptivo:
 
    ```bash
-   cp nginx/conf.d/default.conf /etc/nginx/sites-available/verter-landing.conf
+   sudo cp nginx/conf.d/default.conf /etc/nginx/sites-available/verter-landing.conf
    ```
 
 2. **Habilitar el Sitio**:
-   Crea un enlace simbólico a `sites-enabled`:
+   Crea el enlace simbólico para activar la configuración:
 
    ```bash
-   ln -s /etc/nginx/sites-available/verter-landing.conf /etc/nginx/sites-enabled/
+   sudo ln -s /etc/nginx/sites-available/verter-landing.conf /etc/nginx/sites-enabled/
    ```
 
-3. **Optimización Global (Opcional)**:
-   Si deseas aplicar el alto rendimiento (miles de req/s) a todo tu servidor, abre tu `/etc/nginx/nginx.conf` actual y ajusta estos valores basándote en nuestro `nginx/nginx.conf`:
-   - `worker_connections 65535;` (Asegúrate de que el límite de archivos del sistema - `ulimit` - lo permita).
-   - `keepalive_timeout 65;`
-   - `gzip` settings.
+3. **Verificar y Recargar**:
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+> [!TIP]
+> **Evitar Conflictos**: Asegúrate de que el `server_name` en `verter-landing.conf` sea diferente al de `verter-frontend` (por ejemplo, usando un subdominio distinto o el dominio principal de VerterCloud).
 
 ---
 
@@ -133,7 +136,7 @@ Si prefieres usar la ruta estándar de servidores Debian/Ubuntu/CentOS:
    root /usr/share/nginx/html;
 
    # Después (ajustado a tu nueva ruta)
-   root /var/www/verter-landing;
+   root /var/www/verter-landing/dist;
    ```
 
 ---
