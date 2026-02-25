@@ -1,73 +1,82 @@
-# React + TypeScript + Vite
+# VerterCloud - Infrastructure as a Service (IaaS) Landing Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![VerterCloud Logo](public/vite.svg)
 
-Currently, two official plugins are available:
+**Edición 2026 • Infraestructura de Próxima Generación**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Landing page corporativa para **VerterCloud**, una plataforma IaaS (Infrastructure as a Service) diseñada para sistemas distribuidos modernos, microservicios y despliegues de alta disponibilidad.
 
-## React Compiler
+## 🚀 Características Principales
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Diseño Premium 2026**: Interfaz minimalista con estética de obsidian y glassmorphism.
+- **Portafolio de Infraestructura**: VerterVPN, VerterAuth (Zero Trust), VerterVPS, API Gateway y Load Balancer.
+- **Internacionalización (i18n)**: Soporte completo nativo para Español e Inglés con selector dinámico.
+- **Sección de Cumplimiento Legal**: Adaptado a la normativa colombiana (Ley 1581 de 2012, Superintendencia de Industria y Comercio).
+- **Alto Rendimiento**: Optimizaciones para carga ultrarrápida y animaciones fluidas con Framer Motion.
 
-## Expanding the ESLint configuration
+## 🛠️ Stack Tecnológico
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Core**: React 18 + Vite + TypeScript.
+- **Estilos**: Tailwind CSS v4 (Alpha/Next generation).
+- **Animaciones**: Framer Motion.
+- **Iconografía**: Lucide React.
+- **Internacionalización**: i18next + react-i18next.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 💻 Desarrollo
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Requisitos Previos
+
+- Node.js v18 o superior.
+- npm o pnpm.
+
+### Instalación
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/proyectoskevinsvega/vertercloud-landing-page.git
+
+# Instalar dependencias
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Ejecutar en Desarrollo
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+### Compilar para Producción
+
+```bash
+npm run build
+```
+
+---
+
+## 📂 Estructura del Proyecto
+
+- `/src/components`: Componentes reutilizables (Navbar, Footer, ServiceCards).
+- `/src/pages`: Páginas legales (Términos de Servicio, Política de Privacidad) y Centro de Soporte.
+- `/src/i18n.ts`: Configuración global de traducciones.
+- `/nginx`: Configuraciones de alta disponibilidad e integración con Cloudflare.
+
+## 🛡️ Cumplimiento Legal
+
+El proyecto incluye páginas dedicadas y validadas profesionalmente para la jurisdicción de Colombia:
+
+- **Responsable del Tratamiento**: Información del operador (VEGA MARMOLEJO KEVINS YESID) con NIT y domicilio en Girardota, Antioquia.
+- **Privacidad**: Derechos ARCO, política de menores y oficial de protección de datos (DPO).
+- **Certificaciones**: Basado en el Registro Único Tributario (RUT) ante la DIAN.
+
+## 🌐 Despliegue
+
+Para un despliegue optimizado, consulte la carpeta `/nginx` donde encontrará:
+
+- `nginx.conf`: Configuración global para miles de RPS.
+- `default.conf`: Integración con Real-IP de Cloudflare y cabeceras de seguridad.
+
+---
+
+© 2026 [VerterCloud](https://github.com/proyectoskevinsvega). Todos los derechos reservados.
