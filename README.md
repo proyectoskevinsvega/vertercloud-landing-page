@@ -28,8 +28,7 @@ Landing page corporativa para **VerterCloud**, una plataforma IaaS (Infrastructu
 
 ### Requisitos Previos
 
-- Node.js v18 o superior.
-- npm o pnpm.
+- [Bun](https://bun.sh/) v1.0 o superior.
 
 ### Variables de Entorno
 
@@ -57,19 +56,19 @@ Variables disponibles (prefijo `VITE_` requerido):
 git clone https://github.com/proyectoskevinsvega/vertercloud-landing-page.git
 
 # Instalar dependencias
-npm install
+bun install
 ```
 
 ### Ejecutar en Desarrollo
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ### Compilar para Producción
 
 ```bash
-npm run build
+bun run build
 ```
 
 ---
