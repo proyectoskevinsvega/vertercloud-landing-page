@@ -31,6 +31,24 @@ Landing page corporativa para **VerterCloud**, una plataforma IaaS (Infrastructu
 - Node.js v18 o superior.
 - npm o pnpm.
 
+### Variables de Entorno
+
+El proyecto utiliza variables de entorno para gestionar las URLs de los servicios. Copie el archivo de ejemplo y ajuste los valores:
+
+```bash
+cp .env.example .env
+```
+
+Variables disponibles (prefijo `VITE_` requerido):
+
+- `VITE_VPN_URL`: URL del servicio VerterVPN.
+- `VITE_AUTH_URL`: URL del servicio VerterAuth.
+- `VITE_VPS_URL`: URL del servicio VerterVPS.
+- `VITE_GATEWAY_URL`: URL del API Gateway.
+- `VITE_BALANCER_URL`: URL del Load Balancer.
+
+---
+
 ### Instalación
 
 ```bash
