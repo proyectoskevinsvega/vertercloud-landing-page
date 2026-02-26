@@ -13,6 +13,40 @@ i18n
     resources: {
       en: {
         translation: {
+          seo: {
+            home: {
+              title: 'VerterCloud | Next-Gen Cloud Infrastructure',
+              desc: 'High-performance infrastructure for modern distributed systems. Secure VPN, Auth, VPS, and API Gateway services.',
+            },
+            vpn: {
+              title: 'VerterVPN | Secure Distributed Connectivity',
+              desc: 'Private and encrypted connectivity for corporate environments and distributed infrastructures.',
+            },
+            auth: {
+              title: 'VerterAuth | Zero Trust Authentication',
+              desc: 'Centralized authentication with MFA and Zero Trust architecture for secure modern apps.',
+            },
+            vps: {
+              title: 'VerterVPS | Scalable Virtual Instances',
+              desc: 'Scalable cloud VPS with total control and dedicated resources for production environments.',
+            },
+            gateway: {
+              title: 'API Gateway | Microservices Orchestration',
+              desc: 'Unified entry point with rate limiting and security for your backend microservices.',
+            },
+            balancer: {
+              title: 'Load Balancing | High Availability',
+              desc: 'Intelligent traffic distribution with automatic failover and real-time monitoring.',
+            },
+            terms: {
+              title: 'Terms of Service | VerterCloud',
+              desc: 'Legal terms and conditions for using VerterCloud infrastructure services.',
+            },
+            privacy: {
+              title: 'Privacy Policy | VerterCloud',
+              desc: 'Learn how VerterCloud protects your data and privacy in distributed environments.',
+            },
+          },
           nav: {
             services: 'Services',
             solutions: 'Solutions',
@@ -287,6 +321,40 @@ i18n
       },
       es: {
         translation: {
+          seo: {
+            home: {
+              title: 'VerterCloud | Infraestructura Cloud de Próxima Generación',
+              desc: 'Infraestructura de alto rendimiento para sistemas distribuidos modernos. Servicios seguros de VPN, Auth, VPS y API Gateway.',
+            },
+            vpn: {
+              title: 'VerterVPN | Conectividad Distribuida Segura',
+              desc: 'Conectividad privada y cifrada para entornos corporativos e infraestructuras distribuidas.',
+            },
+            auth: {
+              title: 'VerterAuth | Autenticación Zero Trust',
+              desc: 'Autenticación centralizada con MFA y arquitectura Zero Trust para aplicaciones modernas seguras.',
+            },
+            vps: {
+              title: 'VerterVPS | Instancias Virtuales Escalables',
+              desc: 'VPS en la nube escalable con control total y recursos dedicados para entornos de producción.',
+            },
+            gateway: {
+              title: 'API Gateway | Orquestación de Microservicios',
+              desc: 'Punto de entrada unificado con limitación de tasa y seguridad para tus microservicios backend.',
+            },
+            balancer: {
+              title: 'Balanceo de Carga | Alta Disponibilidad',
+              desc: 'Distribución inteligente de tráfico con conmutación por error automática y monitoreo en tiempo real.',
+            },
+            terms: {
+              title: 'Términos de Servicio | VerterCloud',
+              desc: 'Términos y condiciones legales para el uso de los servicios de infraestructura de VerterCloud.',
+            },
+            privacy: {
+              title: 'Política de Privacidad | VerterCloud',
+              desc: 'Conozca cómo VerterCloud protege sus datos y su privacidad en entornos distribuidos.',
+            },
+          },
           nav: {
             services: 'Servicios',
             solutions: 'Soluciones',

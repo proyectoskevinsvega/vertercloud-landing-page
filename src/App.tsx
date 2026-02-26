@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Footer } from './components/Footer';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
@@ -58,6 +59,10 @@ function LandingPage() {
 
   return (
     <>
+      <Helmet>
+        <title>{t('seo.home.title')}</title>
+        <meta name="description" content={t('seo.home.desc')} />
+      </Helmet>
       <Navbar />
       <Hero />
       
@@ -148,17 +153,21 @@ function LandingPage() {
   );
 }
 
-function ServicePage({ title }: { title: string }) {
+function ServicePage({ title, seoKey }: { title: string; seoKey: string }) {
   const { t } = useTranslation();
   return (
     <>
+      <Helmet>
+        <title>{t(`seo.${seoKey}.title`)}</title>
+        <meta name="description" content={t(`seo.${seoKey}.desc`)} />
+      </Helmet>
       <Navbar />
       <div className="min-h-screen pt-32 px-6 max-w-7xl mx-auto text-center">
         <h1 className="text-4xl md:text-6xl font-black mb-6 text-white">{title}</h1>
         <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
           {t('platform.subtitle')}
         </p>
-        <div className="glass p-12 rounded-[2.5rem] border border-white/10 inline-block">
+        <div className="glass p-12 rounded-4xl border border-white/10 inline-block">
           <p className="text-brand-primary font-bold text-lg mb-4">Próximamente / Coming Soon</p>
           <Link to="/" className="text-white hover:text-brand-primary transition-colors font-bold uppercase tracking-widest text-sm">
             ← {t('nav.login').toLowerCase() === 'login' ? 'Back to Home' : 'Volver al Inicio'}
@@ -179,11 +188,11 @@ function App() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/support" element={<SupportPage />} />
-          <Route path="/vpn" element={<ServicePage title="VerterVPN" />} />
-          <Route path="/auth" element={<ServicePage title="VerterAuth" />} />
-          <Route path="/vps" element={<ServicePage title="VerterVPS" />} />
-          <Route path="/api-gateway" element={<ServicePage title="API Gateway" />} />
-          <Route path="/load-balancing" element={<ServicePage title="Managed Load Balancing" />} />
+          <Route path="/vpn" element={<ServicePage title="VerterVPN" seoKey="vpn" />} />
+          <Route path="/auth" element={<ServicePage title="VerterAuth" seoKey="auth" />} />
+          <Route path="/vps" element={<ServicePage title="VerterVPS" seoKey="vps" />} />
+          <Route path="/api-gateway" element={<ServicePage title="API Gateway" seoKey="gateway" />} />
+          <Route path="/load-balancing" element={<ServicePage title="Managed Load Balancing" seoKey="balancer" />} />
         </Routes>
       </main>
     </BrowserRouter>

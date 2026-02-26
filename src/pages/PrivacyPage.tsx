@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, Shield, Globe, Lock, Eye, Languages, Scale, AlertCircle, Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Footer } from '../components/Footer';
 
 export default function PrivacyPage() {
@@ -14,6 +15,10 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-brand-background text-slate-200 selection:bg-brand-primary/30">
+      <Helmet>
+        <title>{t('seo.privacy.title')}</title>
+        <meta name="description" content={t('seo.privacy.desc')} />
+      </Helmet>
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-brand-primary/10 rounded-full blur-[120px]" />
