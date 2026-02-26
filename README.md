@@ -41,11 +41,12 @@ cp .env.example .env
 
 Variables disponibles (prefijo `VITE_` requerido):
 
-- `VITE_VPN_URL`: URL del servicio VerterVPN.
-- `VITE_AUTH_URL`: URL del servicio VerterAuth.
-- `VITE_VPS_URL`: URL del servicio VerterVPS.
-- `VITE_GATEWAY_URL`: URL del API Gateway.
-- `VITE_BALANCER_URL`: URL del Load Balancer.
+- `VITE_SITE_URL`: URL principal del sitio (ej. `https://bravexcolombia.com`).
+- `VITE_VPN_PATH`: Ruta interna para el servicio VerterVPN (ej. `/vpn`).
+- `VITE_AUTH_PATH`: Ruta interna para el servicio VerterAuth (ej. `/auth`).
+- `VITE_VPS_PATH`: Ruta interna para el servicio VerterVPS (ej. `/vps`).
+- `VITE_GATEWAY_PATH`: Ruta interna para el API Gateway (ej. `/api-gateway`).
+- `VITE_BALANCER_PATH`: Ruta interna para el Load Balancer (ej. `/load-balancing`).
 
 ---
 
