@@ -98,4 +98,45 @@ Para un despliegue optimizado, consulte la carpeta `/nginx` donde encontrará:
 
 ---
 
+## 🚀 Despliegue con PM2
+
+Para mantener la aplicación ejecutándose en segundo plano de forma persistente:
+
+1. **Instalar PM2** (si no lo tienes):
+
+   ```bash
+   sudo npm install -g pm2
+   ```
+
+2. **Compilar el proyecto**:
+
+   ```bash
+   npm run build
+   ```
+
+3. **Iniciar con el archivo de configuración**:
+
+   ```bash
+   pm2 start ecosystem.config.js
+   ```
+
+4. **Comandos Útiles**:
+
+   ```bash
+   # Ver estado de los procesos
+   pm2 status
+
+   # Ver logs en tiempo real
+   pm2 logs vertercloud-landing-page
+
+   # Reiniciar la aplicación
+   pm2 restart vertercloud-landing-page
+
+   # Configurar inicio automático tras reiniciar el servidor
+   pm2 startup
+   pm2 save
+   ```
+
+---
+
 © 2026 [VerterCloud](https://github.com/proyectoskevinsvega). Todos los derechos reservados.
