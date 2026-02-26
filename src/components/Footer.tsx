@@ -13,12 +13,12 @@ export const Footer = () => {
             <div className="w-10 h-10 bg-brand-primary rounded-xl flex items-center justify-center">
               <Globe className="text-white w-6 h-6" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold">{t('footer.info.commercial')}</span>
-              <span className="text-xs text-slate-500 font-medium">
-                {t('footer.info.brandConnection')}
-              </span>
-            </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold">{t('footer.info.commercial')}</span>
+            <span className="text-xs text-slate-500 font-medium">
+              {t('footer.info.brandConnection')} ( {import.meta.env.VITE_SITE_URL || 'bravexcolombia.com'} )
+            </span>
+          </div>
           </div>
           <p className="text-slate-500 max-w-sm mb-8 leading-relaxed">
             {t('footer.desc')}

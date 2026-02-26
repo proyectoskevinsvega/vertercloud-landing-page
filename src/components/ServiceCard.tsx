@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { Link } from 'react-router-dom';
 
 interface ServiceCardProps {
   title: string;
@@ -12,12 +13,12 @@ interface ServiceCardProps {
   index: number;
 }
 
+const MotionLink = motion(Link);
+
 export const ServiceCard = ({ title, description, action, url, icon: Icon, color, index }: ServiceCardProps) => {
   return (
-    <motion.a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <MotionLink
+      to={url}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -62,6 +63,6 @@ export const ServiceCard = ({ title, description, action, url, icon: Icon, color
       
       {/* Animated Border */}
       <div className="absolute inset-0 border border-white/5 group-hover:border-brand-primary/30 rounded-[2rem] transition-colors duration-500" />
-    </motion.a>
+    </MotionLink>
   );
 };

@@ -5,7 +5,7 @@ import { ServiceCard } from './components/ServiceCard';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Footer } from './components/Footer';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SupportPage from './pages/SupportPage';
@@ -148,6 +148,28 @@ function LandingPage() {
   );
 }
 
+function ServicePage({ title }: { title: string }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen pt-32 px-6 max-w-7xl mx-auto text-center">
+        <h1 className="text-4xl md:text-6xl font-black mb-6 text-white">{title}</h1>
+        <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
+          {t('platform.subtitle')}
+        </p>
+        <div className="glass p-12 rounded-[2.5rem] border border-white/10 inline-block">
+          <p className="text-brand-primary font-bold text-lg mb-4">Próximamente / Coming Soon</p>
+          <Link to="/" className="text-white hover:text-brand-primary transition-colors font-bold uppercase tracking-widest text-sm">
+            ← {t('nav.login').toLowerCase() === 'login' ? 'Back to Home' : 'Volver al Inicio'}
+          </Link>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -157,6 +179,11 @@ function App() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/support" element={<SupportPage />} />
+          <Route path="/vpn" element={<ServicePage title="VerterVPN" />} />
+          <Route path="/auth" element={<ServicePage title="VerterAuth" />} />
+          <Route path="/vps" element={<ServicePage title="VerterVPS" />} />
+          <Route path="/api-gateway" element={<ServicePage title="API Gateway" />} />
+          <Route path="/load-balancing" element={<ServicePage title="Managed Load Balancing" />} />
         </Routes>
       </main>
     </BrowserRouter>
