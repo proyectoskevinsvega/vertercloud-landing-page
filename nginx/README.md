@@ -111,9 +111,9 @@ Si prefieres usar la ruta estándar de servidores Debian/Ubuntu/CentOS:
    # Clonar el repositorio
    sudo git clone https://github.com/proyectoskevinsvega/vertercloud-landing-page.git .
 
-   # Instalar y compilar (Asegúrate de tener Node.js instalado)
-   sudo npm install
-   sudo npm run build
+   # Instalar y compilar (Asegúrate de tener Bun instalado)
+   sudo bun install
+   sudo bun run build
    ```
 
 2. **Ajustar Permisos (Crucial)**:
