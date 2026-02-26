@@ -10,7 +10,7 @@ Esta configuración está diseñada para manejar miles de solicitudes por segund
 ## Requisitos Previos
 
 - Nginx instalado o Docker.
-- Los archivos estáticos de la landing page generados en la carpeta `dist/` (`npm run build`).
+- Los archivos estáticos de la landing page generados en la carpeta `dist/` (`bun run build`).
 
 ---
 
@@ -26,7 +26,7 @@ FROM nginx:alpine
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/conf.d/verter-landing.conf /etc/nginx/conf.d/verter-landing.conf
 
-# Copiar contenido estático (asegúrate de haber corrido npm run build)
+# Copiar contenido estático (asegúrate de haber corrido bun run build)
 COPY dist /usr/share/nginx/html
 
 # Exponer puerto
@@ -37,7 +37,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ### Comandos de construcción:
 
-1. `npm run build`
+1. `bun run build`
 2. `docker build -t verter-landing .`
 3. `docker run -d -p 80:80 --name verter-landing verter-landing`
 
