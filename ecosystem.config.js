@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'vertercloud-landing-page',
-      script: 'npm',
-      args: 'run preview', // Ejecuta el servidor de previsualización de Vite
+      script: 'bun',
+      args: 'run preview', // Ejecuta el servidor de previsualización con Bun
       env: {
         NODE_ENV: 'production',
         VITE_PORT: 3006 // Puerto que configuramos en Nginx

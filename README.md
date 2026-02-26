@@ -102,16 +102,16 @@ Para un despliegue optimizado, consulte la carpeta `/nginx` donde encontrará:
 
 Para mantener la aplicación ejecutándose en segundo plano de forma persistente:
 
-1. **Instalar PM2** (si no lo tienes):
+1. **Instalar Bun** (si no lo tienes):
 
    ```bash
-   sudo npm install -g pm2
+   curl -fsSL https://bun.sh/install | bash
    ```
 
 2. **Compilar el proyecto**:
 
    ```bash
-   npm run build
+   bun run build
    ```
 
 3. **Iniciar con el archivo de configuración**:
