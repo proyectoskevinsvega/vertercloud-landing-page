@@ -116,7 +116,7 @@ Para mantener la aplicación ejecutándose en segundo plano de forma persistente
 3. **Iniciar con el archivo de configuración**:
 
    ```bash
-   pm2 start ecosystem.config.js
+   pm2 start ecosystem.config.cjs
    ```
 
 4. **Comandos Útiles**:
