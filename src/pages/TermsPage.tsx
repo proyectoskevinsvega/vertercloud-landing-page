@@ -156,7 +156,7 @@ export default function TermsPage() {
           {[
             { key: 'compliance', icon: Shield },
           ].map(({ key, icon: Icon }) => (
-            <section key={key} className="space-y-6 p-8 rounded-2xl border border-white/5 hover:bg-white/[0.02] transition-colors">
+            <section key={key} className="space-y-6 p-8 rounded-2xl border border-white/5 hover:bg-white/2 transition-colors">
               <h3 className="text-2xl font-bold text-white flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center">
                   <Icon className="text-brand-primary w-4 h-4" />
@@ -201,7 +201,7 @@ export default function TermsPage() {
             { key: 'jurisdiction', icon: Scale },
             { key: 'modifications', icon: History },
           ].map(({ key, icon: Icon }) => (
-            <section key={key} className="space-y-6 p-8 rounded-2xl border border-white/5 hover:bg-white/[0.02] transition-colors">
+            <section key={key} className="space-y-6 p-8 rounded-2xl border border-white/5 hover:bg-white/2 transition-colors">
               <h3 className="text-2xl font-bold text-white flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center">
                   <Icon className="text-brand-primary w-4 h-4" />
