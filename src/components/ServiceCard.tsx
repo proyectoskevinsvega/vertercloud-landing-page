@@ -24,7 +24,7 @@ export const ServiceCard = ({ title, description, action, url, icon: Icon, color
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       whileHover={{ y: -10 }}
-      className="group relative p-8 rounded-[2rem] glass overflow-hidden cursor-pointer"
+      className="group relative p-8 rounded-4xl glass overflow-hidden cursor-pointer"
     >
       {/* Hover Background Glow */}
       <div 
@@ -62,7 +62,7 @@ export const ServiceCard = ({ title, description, action, url, icon: Icon, color
       </div>
       
       {/* Animated Border */}
-      <div className="absolute inset-0 border border-white/5 group-hover:border-brand-primary/30 rounded-[2rem] transition-colors duration-500" />
+      <div className="absolute inset-0 border border-white/5 group-hover:border-brand-primary/30 rounded-4xl transition-colors duration-500" />
     </MotionLink>
   );
 };
