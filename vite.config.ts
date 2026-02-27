@@ -12,6 +12,12 @@ export default defineConfig({
     host: '127.0.0.1',
     port: 3006,
     allowedHosts: ['bravexcolombia.com'],
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8082',
+        changeOrigin: true,
+      },
+    },
     hmr: {
       host: 'bravexcolombia.com',
       protocol: 'wss',

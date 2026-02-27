@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export const Hero = () => {
   const { t } = useTranslation();
@@ -61,14 +62,14 @@ export const Hero = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <button className="w-full sm:w-auto bg-brand-primary text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform group shadow-xl shadow-brand-primary/25">
+          <Link to="/register" className="w-full sm:w-auto bg-brand-primary text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform group shadow-xl shadow-brand-primary/25">
             {t('hero.getStarted')}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <button className="w-full sm:w-auto glass border border-white/10 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white/5 transition-colors group">
+          </Link>
+          <a href="#services" className="w-full sm:w-auto glass border border-white/10 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white/5 transition-colors group">
             {t('hero.viewDocs')}
             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform opacity-50" />
-          </button>
+          </a>
         </motion.div>
       </div>
 

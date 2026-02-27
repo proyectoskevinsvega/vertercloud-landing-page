@@ -73,12 +73,12 @@ export const Navbar = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <button className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+            <Link to="/login" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
               {t('nav.login')}
-            </button>
-            <button className="bg-brand-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-primary/90 transition-colors shadow-lg shadow-brand-primary/20">
+            </Link>
+            <Link to="/register" className="bg-brand-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-primary/90 transition-colors shadow-lg shadow-brand-primary/20">
               {t('nav.getStarted')}
-            </button>
+            </Link>
           </div>
 
           <button
@@ -135,9 +135,9 @@ export const Navbar = () => {
                 </a>
               )
             ))}
-            <button className="bg-brand-primary text-white w-full py-3 rounded-xl font-semibold">
+            <Link to="/register" className="bg-brand-primary text-white w-full py-3 rounded-xl font-semibold text-center mt-2 block">
               {t('nav.getStarted')}
-            </button>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>

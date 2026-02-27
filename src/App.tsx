@@ -5,7 +5,7 @@ import { ServiceCard } from './components/ServiceCard';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Footer } from './components/Footer';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -153,49 +153,55 @@ function LandingPage() {
   );
 }
 
-function ServicePage({ title, seoKey }: { title: string; seoKey: string }) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <Helmet>
-        <title>{t(`seo.${seoKey}.title`)}</title>
-        <meta name="description" content={t(`seo.${seoKey}.desc`)} />
-      </Helmet>
-      <Navbar />
-      <div className="min-h-screen pt-32 px-6 max-w-7xl mx-auto text-center">
-        <h1 className="text-4xl md:text-6xl font-black mb-6 text-white">{title}</h1>
-        <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
-          {t('platform.subtitle')}
-        </p>
-        <div className="glass p-12 rounded-4xl border border-white/10 inline-block">
-          <p className="text-brand-primary font-bold text-lg mb-4">Próximamente / Coming Soon</p>
-          <Link to="/" className="text-white hover:text-brand-primary transition-colors font-bold uppercase tracking-widest text-sm">
-            ← {t('nav.login').toLowerCase() === 'login' ? 'Back to Home' : 'Volver al Inicio'}
-          </Link>
-        </div>
-      </div>
-      <Footer />
-    </>
-  );
-}
+
+import { AdminLayout } from './layouts/AdminLayout';
+import { OverviewPage } from './pages/overview/dashboard/OverviewPage';
+import { VpnDashboard } from './pages/vpn/dashboard/VpnDashboard';
+import { AuthDashboard } from './pages/auth/dashboard/AuthDashboard';
+import { VpsDashboard } from './pages/vps/dashboard/VpsDashboard';
+import { GatewayDashboard } from './pages/gateway/dashboard/GatewayDashboard';
+import { BalancerDashboard } from './pages/balancer/dashboard/BalancerDashboard';
+
+// Auth Imports
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import Login from './pages/internal/Login';
+import Register from './pages/internal/Register';
+import VerifyEmail from './pages/internal/VerifyEmail';
+import { Toaster } from 'sonner';
 
 function App() {
   return (
-    <BrowserRouter>
-      <main className="min-h-screen selection:bg-brand-primary/30">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/support" element={<SupportPage />} />
-          <Route path="/vpn" element={<ServicePage title="VerterVPN" seoKey="vpn" />} />
-          <Route path="/auth" element={<ServicePage title="VerterAuth" seoKey="auth" />} />
-          <Route path="/vps" element={<ServicePage title="VerterVPS" seoKey="vps" />} />
-          <Route path="/api-gateway" element={<ServicePage title="API Gateway" seoKey="gateway" />} />
-          <Route path="/load-balancing" element={<ServicePage title="Managed Load Balancing" seoKey="balancer" />} />
-        </Routes>
-      </main>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <main className="min-h-screen selection:bg-brand-primary/30">
+          <Toaster theme="dark" position="top-center" />
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/support" element={<SupportPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            
+            {/* Admin Dashboard Routes (Protected) */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<AdminLayout />}>
+                <Route index element={<OverviewPage />} />
+                <Route path="vpn/*" element={<VpnDashboard />} />
+                <Route path="auth/*" element={<AuthDashboard />} />
+                <Route path="vps/*" element={<VpsDashboard />} />
+                <Route path="gateway/*" element={<GatewayDashboard />} />
+                <Route path="balancer/*" element={<BalancerDashboard />} />
+                <Route path="settings" element={<div className="p-8">Settings Page (WIP)</div>} />
+              </Route>
+            </Route>
+          </Routes>
+        </main>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -107,6 +107,27 @@ i18n
               },
             },
           },
+          dashboard: {
+            nav: {
+              hub: 'Service Hub',
+              overview: 'Overview',
+              vps: 'VerterVPS',
+              vpn: 'VerterVPN',
+              auth: 'VerterAuth',
+              gateway: 'API Gateway',
+              balancer: 'Load Balancer',
+              settings: 'Settings'
+            },
+            header: {
+              title: 'VerterCloud Control Panel',
+            },
+            overview: { title: 'Overview' },
+            vps: { title: 'VPS Dashboard' },
+            vpn: { title: 'VPN Dashboard' },
+            auth: { title: 'Auth Dashboard' },
+            gateway: { title: 'Gateway Dashboard' },
+            balancer: { title: 'Load Balancer Dashboard' }
+          },
           compliance: {
             title: 'Security & Compliance',
             desc: 'Operating under Colombian jurisdiction with clear privacy policies, transparent terms, and a shared responsibility model for production environments.',
@@ -414,6 +435,27 @@ i18n
                 url: import.meta.env.VITE_BALANCER_PATH || '/load-balancing',
               },
             },
+          },
+          dashboard: {
+            nav: {
+              hub: 'Hub de servicios',
+              overview: 'Visión General',
+              vps: 'VerterVPS',
+              vpn: 'VerterVPN',
+              auth: 'VerterAuth',
+              gateway: 'API Gateway',
+              balancer: 'Load Balancer',
+              settings: 'Configuración'
+            },
+            header: {
+              title: 'Panel de Control VerterCloud',
+            },
+            overview: { title: 'Visión General' },
+            vps: { title: 'Panel VerterVPS' },
+            vpn: { title: 'Panel VerterVPN' },
+            auth: { title: 'Panel VerterAuth' },
+            gateway: { title: 'Panel API Gateway' },
+            balancer: { title: 'Panel Load Balancer' }
           },
           compliance: {
             title: 'Seguridad y Cumplimiento',
