@@ -11,7 +11,7 @@ export default defineConfig({
     allowedHosts: ["bravexcolombia.com"],
     proxy: {
       "/api": {
-        target: "http://gateway.bravexcolombia.com:8082",
+        target: "https://gateway.bravexcolombia.com",
         changeOrigin: true,
       },
     },
@@ -26,7 +26,7 @@ export default defineConfig({
     allowedHosts: ["bravexcolombia.com"],
     proxy: {
       "/api": {
-        target: "http://gateway.bravexcolombia.com:8082",
+        target: "https://gateway.bravexcolombia.com",
         changeOrigin: true,
       },
     },
