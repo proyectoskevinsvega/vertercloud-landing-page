@@ -31,4 +31,19 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react":  ["react", "react-dom"],
+          "vendor-router": ["react-router-dom"],
+          "vendor-motion": ["framer-motion"],
+          "vendor-icons":  ["lucide-react"],
+          "vendor-i18n":   ["i18next", "react-i18next", "i18next-browser-languagedetector"],
+          "vendor-ui":     ["clsx", "tailwind-merge", "sonner", "axios", "react-helmet-async"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
 });

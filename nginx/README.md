@@ -1,181 +1,240 @@
-# VerterCloud High-Performance Nginx Configuration
+# Nginx Configuration — vertercloud landing-page Frontend
 
-Esta configuración está diseñada para manejar miles de solicitudes por segundo, optimizada para el modelo IaaS de VerterCloud y preparada para operar detrás de un proxy de **Cloudflare**.
+Configuración de Nginx para servir la SPA (React/Vite) con **zero-downtime deployments**, máxima seguridad, y caché agresivo de assets estáticos.
 
-## Estructura de Archivos
-
-- `nginx.conf`: Configuración global optimizada (Worker connections, buffers, compresión).
-- `conf.d/verter-landing.conf`: Configuración del servidor (Real-IP de Cloudflare, Caché, Seguridad).
-
-## Requisitos Previos
-
-- Nginx instalado o Docker.
-- Los archivos estáticos de la landing page generados en la carpeta `dist/` (`bun run build`).
+Tuneado para: **4 vCPU · 8 GB RAM · 75 GB NVMe · 200 Mbit/s** · Cloudflare CDN delante.
 
 ---
 
-## Opción 1: Despliegue con Docker (Recomendado)
+## Estructura de archivos
 
-Crea un `Dockerfile` en la raíz del proyecto para empaquetar la configuración y el contenido:
-
-```dockerfile
-# Dockerfile
-FROM nginx:alpine
-
-# Copiar configuraciones
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/conf.d/verter-landing.conf /etc/nginx/conf.d/verter-landing.conf
-
-# Copiar contenido estático (asegúrate de haber corrido bun run build)
-COPY dist /usr/share/nginx/html
-
-# Exponer puerto
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+```
+nginx/
+├── nginx.conf                    # Virtual host — va a /etc/nginx/sites-available/
+└── etc/
+    └── nginx/
+        ├── nginx.conf            # Config principal — va a /etc/nginx/nginx.conf
+        └── conf.d/
+            ├── ssl.conf          # TLS compartido (cert + ciphers + sesión) — va a /etc/nginx/conf.d/
+            └── security.conf     # Headers de seguridad globales — va a /etc/nginx/conf.d/
 ```
 
-### Comandos de construcción:
-
-1. `bun run build`
-2. `docker build -t verter-landing .`
-3. `docker run -d -p 80:80 --name verter-landing verter-landing`
+> El folder `nginx/` replica la estructura del servidor para que sea clara la ubicación destino de cada archivo.
 
 ---
 
-## Opción 2: Integración en Servidor con Múltiples Sitios (sites-available)
+## Arquitectura de tráfico
 
-Dado que tu servidor ya gestiona múltiples servicios (como `headscale`, `verter-frontend`, etc.), seguiremos tu estructura estándar:
-
-1. **Crear Configuración del Sitio**:
-   Copia el archivo de configuración a la carpeta de sitios disponibles con un nombre descriptivo:
-
-   ```bash
-   sudo cp nginx/conf.d/verter-landing.conf /etc/nginx/sites-available/verter-landing.conf
-   ```
-
-2. **Habilitar el Sitio**:
-   Crea el enlace simbólico para activar la configuración:
-
-   ```bash
-   sudo ln -s /etc/nginx/sites-available/verter-landing.conf /etc/nginx/sites-enabled/
-   ```
-
-3. **Verificar y Recargar**:
-   ```bash
-   sudo nginx -t
-   sudo systemctl reload nginx
-   ```
-
-> [!TIP]
-> **Evitar Conflictos**: Asegúrate de que el `server_name` en `verter-landing.conf` sea diferente al de `verter-frontend` (por ejemplo, usando un subdominio distinto o el dominio principal de VerterCloud).
+```
+Usuario
+  │
+  ▼
+Cloudflare CDN  ←── Cachea assets estáticos (js/css/img)
+  │                  La mayoría de requests nunca llegan al VPS
+  ▼
+Este Nginx (VPS)
+  ├── GET /            → Sirve index.html  (no-cache, siempre fresco)
+  ├── GET /assets/*.js → Sirve .gz pre-comprimido (caché 1 año)
+  └── POST /api/*      → El browser va DIRECTO al Load Balancer
+                         (no pasa por este Nginx)
+```
 
 ---
 
-## Opción 3: Instalación Directa (Servidor Dedicado)
+## Archivos
 
-1. **Copiar archivos**:
-   Copia el contenido de `nginx/` al directorio de configuración de Nginx (usualmente `/etc/nginx/`).
+### `nginx.conf` — Virtual Host
 
-   ```bash
-   cp nginx/nginx.conf /etc/nginx/nginx.conf
-   cp nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
-   ```
+Archivo de configuración del sitio `bravexcolombia.com`. Se copia a `/etc/nginx/sites-available/` y se activa con un symlink.
 
-2. **Cargar contenido**:
-   Copia los archivos generados en `dist/` a la ruta definida en `default.conf` (`/usr/share/nginx/html`).
+| Bloque                  | Qué hace                                                             |
+| ----------------------- | -------------------------------------------------------------------- |
+| `server { listen 80 }`  | Redirige todo el HTTP → HTTPS (301)                                  |
+| `server { listen 443 }` | Servidor HTTPS principal                                             |
+| TLS                     | Heredado de `conf.d/ssl.conf` — no se repite aquí                    |
+| `location /`            | Sirve `index.html`, `Cache-Control: no-store` para la SPA            |
+| `location ~* static`    | Assets con `gzip_static on` + `Cache-Control: public, immutable, 1y` |
+| `location ~ /\.`        | Bloquea `.git`, `.env`, `.htaccess`, archivos sensibles              |
+| `error_page 429/50x`    | Páginas de error personalizadas                                      |
 
-   ```bash
-   cp -r dist/* /usr/share/nginx/html/
-   ```
+**Decisiones de diseño:**
 
-3. **Verificar y Reiniciar**:
-   ```bash
-   nginx -t          # Verifica que la sintaxis sea correcta
-   systemctl restart nginx
-   ```
-
----
-
-## Opción 4: Servidor Linux con Directorio Estándar (/var/www)
-
-Si prefieres usar la ruta estándar de servidores Debian/Ubuntu/CentOS:
-
-1. **Descargar Proyecto y Compilar**:
-
-   ```bash
-   # Crear directorio y entrar
-   sudo mkdir -p /var/www/verter-landing
-   cd /var/www/verter-landing
-
-   # Clonar el repositorio
-   sudo git clone https://github.com/proyectoskevinsvega/vertercloud-landing-page.git .
-
-   # Instalar y compilar (Asegúrate de tener Bun instalado)
-   sudo bun install
-   sudo bun run build
-   ```
-
-2. **Ajustar Permisos (Crucial)**:
-   Asegúrate de que el usuario de Nginx (usualmente `www-data` o `nginx`) tenga acceso de lectura:
-
-   ```bash
-   # Cambiar propietario al usuario del servidor web
-   sudo chown -R www-data:www-data /var/www/verter-landing
-
-   # Ajustar permisos: Directorios (755) y Archivos (644)
-   sudo find /var/www/verter-landing -type d -exec chmod 755 {} \;
-   sudo find /var/www/verter-landing -type f -exec chmod 644 {} \;
-   ```
-
-3. **Actualizar Ruta en `conf.d/default.conf`**:
-   Abre el archivo `nginx/conf.d/default.conf` y cambia la línea `root`:
-
-   ```nginx
-   # Antes
-   root /usr/share/nginx/html;
-
-   # Después (ajustado a tu nueva ruta)
-   root /var/www/verter-landing/dist;
-   ```
+- `root` apunta a `/var/www/vertercloud/current/dist` — el `current` es un **symlink** que se actualiza atómicamente en cada deploy. Garantiza zero-downtime.
+- `gzip_static on` — Nginx sirve `main.js.gz` pre-generado en el build. Elimina el ~80% del CPU de compresión runtime.
+- SSL no se define en el virtual host — se hereda de `conf.d/ssl.conf` para evitar duplicación (compartido con `landing-page`).
 
 ---
 
-## Verificación de Permisos
+### `etc/nginx/nginx.conf` — Configuración principal
 
-Si ves un error **403 Forbidden**, verifica que el usuario de Nginx tenga permisos de ejecución en toda la ruta jerárquica:
+Config global del proceso Nginx. Se copia a `/etc/nginx/nginx.conf`.
+
+#### Workers (tuneado para 4 vCPU)
+
+| Directiva              | Valor  | Razonamiento                                                                        |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------- |
+| `worker_processes`     | `4`    | 1 por vCPU, sin hyperthreading overhead                                             |
+| `worker_connections`   | `4096` | 4×4096=16384 total. Con 200Mbit/s el cuello de botella es la red, no las conexiones |
+| `worker_rlimit_nofile` | `8192` | File descriptors por worker = worker_connections                                    |
+| `use epoll`            | —      | Mejor I/O multiplexer en Linux (>= 2.6)                                             |
+
+#### Keepalive
+
+| Directiva            | Valor  | Razonamiento                                        |
+| -------------------- | ------ | --------------------------------------------------- |
+| `keepalive_timeout`  | `65s`  | Más tiempo = menos SSL handshakes (costosos en CPU) |
+| `keepalive_requests` | `1000` | Balance entre reutilización y liberación de memoria |
+
+#### File Cache (NVMe aware)
+
+```nginx
+open_file_cache max=50000 inactive=30s;
+```
+
+Con NVMe (latencia ~0.1ms), 50k entradas es suficiente. Cachear 200k como en configs genéricas desperdiciaría ~40MB de RAM innecesariamente.
+
+#### Gzip (runtime)
+
+`gzip_comp_level 4` — los assets ya vienen pre-comprimidos al nivel 9 por el deploy script. El gzip runtime solo aplica al `index.html` y respuestas dinámicas. Nivel 4 es el punto óptimo CPU/ratio para respuestas pequeñas en 4 vCPU.
+
+#### Rate Limiting
+
+Solo 2 zonas (esta instancia solo sirve la SPA, la API va al Load Balancer):
+
+| Zona         | Memoria | Rate         | Propósito                         |
+| ------------ | ------- | ------------ | --------------------------------- |
+| `general`    | 10m     | 200 req/s/IP | Frena scrapers y bots             |
+| `conn_limit` | 10m     | —            | Límite conexiones TCP simultáneas |
+
+---
+
+### `etc/nginx/conf.d/security.conf` — Headers de seguridad globales
+
+Se copia a `/etc/nginx/conf.d/`. Se aplica a **todos** los virtual hosts.
+
+| Header                      | Valor                                          | Propósito                     |
+| --------------------------- | ---------------------------------------------- | ----------------------------- |
+| `X-Content-Type-Options`    | `nosniff`                                      | Evita MIME sniffing           |
+| `X-Frame-Options`           | `SAMEORIGIN`                                   | Anti-clickjacking             |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | HSTS 2 años                   |
+| `Referrer-Policy`           | `strict-origin-when-cross-origin`              | Control de referrer           |
+| `Permissions-Policy`        | Desactiva geo, mic, cámara, USB, etc.          | Hardening de APIs del browser |
+| `Content-Security-Policy`   | `default-src 'self'` + CDNs explícitos         | Anti-XSS nivel enterprise     |
+| `Cross-Origin-*`            | `same-origin` / `require-corp`                 | Post-Spectre isolation        |
+
+> **Nota sobre Cache-Control:** El `security.conf` no define `Cache-Control` globalmente. Cada `location {}` del virtual host lo gestiona: `no-store` para HTML, `public, immutable` para assets.
+
+---
+
+### `etc/nginx/conf.d/ssl.conf` — TLS compartido
+
+Se copia a `/etc/nginx/conf.d/`. Se aplica a **todos** los virtual hosts con SSL del VPS.
+
+> Este archivo existe porque el VPS aloja 2 sitios (`vertercloud` y `vertercloud`) que comparten el mismo **Cloudflare Origin Certificate**. Centraliza la config una sola vez en lugar de repetirla en cada virtual host.
+
+| Directiva           | Valor                   | Propósito                                                       |
+| ------------------- | ----------------------- | --------------------------------------------------------------- |
+| `ssl_certificate`   | `cloudflare-origin.crt` | Canal TLS entre Cloudflare y el VPS                             |
+| `ssl_session_cache` | `shared:SSL:50m`        | Una sola zona compartida entre los 4 workers y todos los vhosts |
+| `ssl_protocols`     | `TLSv1.2 TLSv1.3`       | Solo protocolos modernos                                        |
+| `ssl_stapling`      | `off`                   | Cloudflare Origin CA no tiene OCSP público                      |
+
+---
+
+## Instalación en el VPS
+
+> Ejecutar desde el directorio del repositorio clonado en el VPS: `/var/www/vertercloud/`
 
 ```bash
-sudo namei -om /var/www/verter-landing
+# ── 1. Crear estructura de directorios ───────────────────────────────────────
+sudo mkdir -p /var/www/vertercloud/{releases,errors}
+sudo mkdir -p /etc/nginx/{conf.d,ssl}
+sudo chown -R $USER:$USER /var/www/vertercloud
+
+# ── 2. Copiar configuración principal de Nginx ───────────────────────────────
+sudo cp /var/www/vertercloud/nginx/etc/nginx/nginx.conf \
+        /etc/nginx/nginx.conf
+
+# ── 3. Copiar TLS compartido (ssl.conf) ─────────────────────────────────────
+sudo cp /var/www/vertercloud/nginx/etc/nginx/conf.d/ssl.conf \
+        /etc/nginx/conf.d/ssl.conf
+
+# ── 4. Copiar headers de seguridad globales ──────────────────────────────────
+sudo cp /var/www/vertercloud/nginx/etc/nginx/conf.d/security.conf \
+        /etc/nginx/conf.d/security.conf
+
+# ── 5. Copiar y activar el virtual host ─────────────────────────────────────
+sudo cp /var/www/vertercloud/nginx/nginx.conf \
+        /etc/nginx/sites-available/vertercloud.conf
+
+sudo ln -sfn /etc/nginx/sites-available/vertercloud.conf \
+             /etc/nginx/sites-enabled/vertercloud.conf
+
+# ── 5. Eliminar el default de Nginx si existe ────────────────────────────────
+sudo rm -f /etc/nginx/sites-enabled/default
+
+# ── 6. Copiar certificados Cloudflare Origin (si no están ya) ───────────────
+# sudo cp cloudflare-origin.crt /etc/nginx/ssl/cloudflare-origin.crt
+# sudo cp cloudflare-origin.key /etc/nginx/ssl/cloudflare-origin.key
+# sudo chmod 600 /etc/nginx/ssl/cloudflare-origin.key
+
+# ── 7. Crear páginas de error personalizadas ─────────────────────────────────
+sudo mkdir -p /var/www/vertercloud/errors
+echo '<html><body><h1>429 Too Many Requests</h1></body></html>' | \
+    sudo tee /var/www/vertercloud/errors/429.html > /dev/null
+echo '<html><body><h1>500 Internal Server Error</h1></body></html>' | \
+    sudo tee /var/www/vertercloud/errors/50x.html > /dev/null
+
+# ── 8. Aplicar kernel tuning (sysctl) ───────────────────────────────────────
+sudo cp /var/www/vertercloud/nginx/etc/sysctl.conf /etc/sysctl.conf
+sudo sysctl -p
+
+# ── 9. Verificar configuración y recargar ────────────────────────────────────
+sudo nginx -t && sudo systemctl reload nginx
+
+# ── 10. Verificar que está activo ────────────────────────────────────────────
+sudo systemctl status nginx
+curl -I https://bravexcolombia.com
 ```
 
 ---
 
-## Características de Rendimiento
+## Rollback instantáneo
 
-### 1. Integración con Cloudflare (Real-IP)
+```bash
+# Ver releases disponibles
+ls -dt /var/www/vertercloud/releases/*
 
-Nginx está configurado para leer la cabecera `CF-Connecting-IP`. Esto asegura que tus logs muestren la IP real del visitante y no las del servidor proxy de Cloudflare.
-
-> [!IMPORTANT]
-> Los rangos de IP en `conf.d/default.conf` están actualizados a Febrero 2026. Si Cloudflare actualiza sus rangos, deberás actualizarlos allí.
-
-### 2. Caché Agresiva
-
-Los archivos estáticos (`.js`, `.css`, imágenes) se sirven con una cabecera de caché de **1 año**. Esto reduce drásticamente las solicitudes al servidor una vez que el usuario ha cargado el sitio.
-
-### 3. Seguridad Hardened
-
-- **HSTS**: Obliga el uso de HTTPS.
-- **Rate Limiting**: Configurado a 100 req/s con burst de 50 para evitar ataques de denegación de servicio (DoS) a nivel de servidor local.
-- **Security Headers**: Protección contra XSS, sniff de tipos y frames no autorizados.
-
-### 4. Alta Concurrencia
-
-Configurado con `worker_connections 65535` para soportar tráfico masivo simultáneo.
+# Apuntar al release anterior (1 segundo de downtime = 0)
+ln -sfn /var/www/vertercloud/releases/[TIMESTAMP] /var/www/vertercloud/current
+sudo systemctl reload nginx
+```
 
 ---
 
-## Monitoreo de Salud
+## Monitoreo
 
-Puedes verificar el estado del servidor accediendo a la ruta `/health`. Debería devolver un código `200` con el texto `healthy`.
+```bash
+# Estado de Nginx
+sudo systemctl status nginx
+
+# Logs de acceso en tiempo real
+tail -f /var/log/nginx/access.log
+
+# Errores
+tail -f /var/log/nginx/error.log
+
+# Log de deploys
+tail -f /var/www/vertercloud/deploy.log
+
+# Conexiones activas
+ss -s
+```
+
+---
+
+## Notas de seguridad SSL
+
+- El certificado **Cloudflare Origin** (`cloudflare-origin.crt`) es el canal seguro entre Cloudflare y el VPS. Los usuarios no lo ven directamente.
+- El certificado que ven los usuarios es el de **Cloudflare Edge** (gestionado automáticamente por Cloudflare).
+- **OCSP Stapling** está deshabilitado porque la CA de Cloudflare Origin no tiene un responder OCSP público. Cloudflare hace OCSP stapling en su edge para el certificado público.

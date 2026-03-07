@@ -1,0 +1,79 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── 2. Setup Bun ─────────────────────────────────────────────────────────
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      # ── 3. Install & Build ───────────────────────────────────────────────────
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      # ── 4. Pre-compress assets for gzip_static ───────────────────────────────
+      - name: Pre-compress assets (gzip_static)
+        run: |
+          find dist -type f \( -name "*.js" -o -name "*.css" -o -name "*.svg" \
+            -o -name "*.html" -o -name "*.json" \) \
+            -print0 | xargs -0 -P4 -I{} gzip -9 -k -f "{}"
+
+      # ── 5. Upload dist/ to VPS ───────────────────────────────────────────────
+      - name: Upload dist to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "dist/"
+          target: "/var/www/vertercloud/landing-page/releases/${{ github.sha }}"
+          strip_components: 0
+
+      # ── 6. Switch symlink + health check + rollback ──────────────────────────
+      - name: Activate release & health check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            RELEASE_DIR="/var/www/vertercloud/landing-page/releases/${{ github.sha }}"
+            CURRENT_DIR="/var/www/vertercloud/landing-page/current"
+            PREVIOUS=$(readlink -f "$CURRENT_DIR" 2>/dev/null || echo "")
+
+            # Atomic switch
+            ln -sfn "$RELEASE_DIR" "$CURRENT_DIR"
+            sudo systemctl reload nginx
+
+            # Health check
+            sleep 2
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://localhost/ -H "Host: bravexcolombia.com")
+
+            if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "301" ]; then
+              echo "❌ Health check failed (HTTP $HTTP_STATUS) — rolling back"
+              if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
+                ln -sfn "$PREVIOUS" "$CURRENT_DIR"
+                sudo systemctl reload nginx
+              fi
+              exit 1
+            fi
+
+            echo "✅ Deploy successful — HTTP $HTTP_STATUS — Release: ${{ github.sha }}"
+
+            # Cleanup: conservar solo los últimos 5 releases
+            ls -1dt /var/www/vertercloud/landing-page/releases/* | tail -n +6 | xargs -r rm -rf
