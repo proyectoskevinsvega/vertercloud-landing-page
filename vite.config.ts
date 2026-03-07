@@ -35,12 +35,20 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "vendor-react":  ["react", "react-dom"],
+          // Routing
           "vendor-router": ["react-router-dom"],
+
+          // Animations — más pesada, cacheable por separado
           "vendor-motion": ["framer-motion"],
+
+          // Icons
           "vendor-icons":  ["lucide-react"],
+
+          // i18n stack
           "vendor-i18n":   ["i18next", "react-i18next", "i18next-browser-languagedetector"],
-          "vendor-ui":     ["clsx", "tailwind-merge", "sonner", "axios", "react-helmet-async"],
+
+          // UI utilities (sin axios ni react-helmet-async para evitar circular imports)
+          "vendor-ui":     ["clsx", "tailwind-merge", "sonner"],
         },
       },
     },
