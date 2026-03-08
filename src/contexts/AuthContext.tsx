@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string, _rememberMe = false) => {
     try {
-      const tenantId = import.meta.env.VITE_TENANT_SLUG || 'google';
+      const tenantId = import.meta.env.VITE_TENANT_SLUG || 'default';
       const response = await api.post('/auth/login', {
         tenant_id: tenantId,
         identifier: email,
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const tenantId = import.meta.env.VITE_TENANT_SLUG || 'google';
+      const tenantId = import.meta.env.VITE_TENANT_SLUG || 'default';
       await api.post('/auth/register', {
         tenant_id: tenantId,
         username: name,
