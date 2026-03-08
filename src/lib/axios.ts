@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Get backend URL from env or use explicitly the port 8080 where auth-service runs
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+// Construct API URL from environment variables
+const API_URL = import.meta.env.VITE_API_BASE_URL || 
+                (import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}${import.meta.env.VITE_API_BASE_PATH || '/api/v1'}` : '/api/v1');
 
 export const api = axios.create({
   baseURL: API_URL,
