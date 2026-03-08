@@ -64,7 +64,7 @@ api.interceptors.request.use(
       // Auto-inyección Multi-Inquilino (SaaS B2B)
       // Agrega el ID de la Empresa automáticamente a todos los payloads JSON
       if (config.data && typeof config.data === 'object') {
-        config.data.tenant_id = import.meta.env.VITE_TENANT_SLUG || 'google';
+        config.data.tenant_id = import.meta.env.VITE_TENANT_SLUG || 'default';
       }
     }
     return config;
