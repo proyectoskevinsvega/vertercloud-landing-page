@@ -160,7 +160,7 @@ export const VpsDashboard = () => {
 
       {activeTab !== 'inicio' && (
         <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
-          <p className="text-slate-500 font-medium">Contenido de la pestaña "{tabs.find(t => t.id === activeTab)?.label}" en construcción.</p>
+          <p className="text-slate-500 font-medium">Contenido de la pestaña "{(tabs || []).find(t => t.id === activeTab)?.label}" en construcción.</p>
         </div>
       )}
     </div>

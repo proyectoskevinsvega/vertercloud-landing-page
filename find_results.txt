@@ -1,0 +1,2 @@
+src/pages/vpn/dashboard/components/DeviceCard.tsx:  const currentServer = (servers || []).find(s => s.id === currentServerId);
+src/pages/vps/dashboard/VpsDashboard.tsx:          <p className="text-slate-500 font-medium">Contenido de la pestaña "{tabs.find(t => t.id === activeTab)?.label}" en construcción.</p>
