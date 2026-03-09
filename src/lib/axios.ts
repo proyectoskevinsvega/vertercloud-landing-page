@@ -62,9 +62,12 @@ api.interceptors.request.use(
       }
 
       // Auto-inyección Multi-Inquilino (SaaS B2B)
-      // Agrega el ID de la Empresa automáticamente a todos los payloads JSON
-      if (config.data && typeof config.data === 'object') {
-        config.data.tenant_id = import.meta.env.VITE_TENANT_SLUG || 'default';
+      // Solo inyectar en objetos (no arrays) y evitar rutas de VPN si el backend no lo espera
+      if (config.data && typeof config.data === 'object' && !Array.isArray(config.data)) {
+        const isVpnPath = config.url?.includes('/vpn/');
+        if (!isVpnPath || !config.data.tenant_id) {
+          config.data.tenant_id = import.meta.env.VITE_TENANT_SLUG || 'default';
+        }
       }
     }
     return config;
