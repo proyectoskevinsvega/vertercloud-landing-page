@@ -31,8 +31,15 @@ export const PlanOverview = ({ planStatus, loading }: PlanOverviewProps) => {
 
   if (!planStatus) return null;
 
-  const bandwidthPercentage = planStatus.bandwidth_limit_bytes > 0 
-    ? (planStatus.bandwidth_used_bytes / planStatus.bandwidth_limit_bytes) * 100 
+  const used = planStatus.active_devices ?? 0;
+  const limit = planStatus.max_devices;
+  const limitLabel = limit === -1 ? '∞' : limit;
+
+  const bandwidthUsed = planStatus.bandwidth_used_bytes ?? 0;
+  const bandwidthLimit = planStatus.bandwidth_limit_bytes ?? 0;
+
+  const bandwidthPercentage = bandwidthLimit > 0 
+    ? (bandwidthUsed / bandwidthLimit) * 100 
     : 0;
 
   return (
@@ -45,7 +52,7 @@ export const PlanOverview = ({ planStatus, loading }: PlanOverviewProps) => {
         <div>
           <p className="text-sm text-slate-500 font-medium">{t('dashboard.vpn.devices_used', 'Dispositivos Activos')}</p>
           <p className="text-2xl font-bold text-slate-800">
-            {planStatus.devices_used} <span className="text-slate-400 text-lg font-normal">/ {planStatus.devices_limit}</span>
+            {used} <span className="text-slate-400 text-lg font-normal">/ {limitLabel}</span>
           </p>
         </div>
       </div>
@@ -58,7 +65,7 @@ export const PlanOverview = ({ planStatus, loading }: PlanOverviewProps) => {
             <span>{t('dashboard.vpn.bandwidth', 'Ancho de Banda (Mensual)')}</span>
           </div>
           <span className="text-sm font-medium text-slate-700">
-            {formatBytes(planStatus.bandwidth_used_bytes)} / {formatBytes(planStatus.bandwidth_limit_bytes)}
+            {formatBytes(bandwidthUsed)} / {bandwidthLimit > 0 ? formatBytes(bandwidthLimit) : 'No lim.'}
           </span>
         </div>
         <div className="w-full bg-slate-100 rounded-full h-2.5 mt-2">

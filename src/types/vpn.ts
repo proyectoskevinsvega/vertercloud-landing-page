@@ -30,10 +30,11 @@ export interface Server {
 }
 
 export interface PlanStatus {
-  devices_used: number;
-  devices_limit: number;
-  bandwidth_used_bytes: number;
-  bandwidth_limit_bytes: number;
+  active_devices: number;
+  max_devices: number;
+  can_add_device: boolean;
+  bandwidth_used_bytes?: number;
+  bandwidth_limit_bytes?: number;
 }
 
 export interface DeviceSecurity {

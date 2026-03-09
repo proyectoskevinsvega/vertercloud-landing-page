@@ -24,7 +24,7 @@ export const VpnDashboard = () => {
     refetchPlan(); // Re-fetch plan since bandwidth or connection limits might change
   };
 
-  const isLimitReached = planStatus ? planStatus.devices_used >= planStatus.devices_limit : false;
+  const isLimitReached = planStatus ? !planStatus.can_add_device : false;
 
   return (
     <div className="max-w-7xl mx-auto pb-12">
