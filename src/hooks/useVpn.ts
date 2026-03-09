@@ -12,7 +12,7 @@ export const useDevices = () => {
     try {
       setLoading(true);
       const res = await vpnService.getDevices();
-      setDevices(res.data);
+      setDevices(Array.isArray(res) ? res : res?.data || []);
       setError(null);
     } catch (err: any) {
       setError(err);
@@ -38,7 +38,7 @@ export const useServers = () => {
     try {
       setLoading(true);
       const res = await vpnService.getServers();
-      setServers(res.data);
+      setServers(Array.isArray(res) ? res : res?.data || []);
       setError(null);
     } catch (err: any) {
       setError(err);
@@ -91,8 +91,11 @@ export const useDeviceSettings = (deviceId: string) => {
         vpnService.getDeviceSecurity(deviceId),
         vpnService.getDeviceStealth(deviceId)
       ]);
-      setSecurity(secData);
-      setStealth({ enabled: stealthData.enabled, config: stealthData.stealth_config });
+      setSecurity(secData || { enable_adblock: false, enable_malware_filter: false, enable_killswitch: false, enable_ip_rotation: false });
+      setStealth({ 
+        enabled: stealthData?.enabled || false, 
+        config: stealthData?.stealth_config || null 
+      });
     } catch (error) {
       console.error('Error loading device settings:', error);
     } finally {

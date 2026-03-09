@@ -20,7 +20,7 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
   
   const connected = device.status === 'active' && !!device.client;
   const currentServerId = device.client?.server_id;
-  const currentServer = servers.find(s => s.id === currentServerId);
+  const currentServer = (servers || []).find(s => s.id === currentServerId);
 
   const getIcon = () => {
     switch (device.device_type) {
@@ -143,7 +143,7 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
                 id={`server-select-${device.id}`}
               >
                 <option value="">{t('dashboard.vpn.choose_server', '-- Seleccionar Servidor --')}</option>
-                {servers.map(s => (
+                {(servers || []).map(s => (
                   <option key={s.id} value={s.id}>{s.name} ({s.country_code}) • {s.status}</option>
                 ))}
               </select>
