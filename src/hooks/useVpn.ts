@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { vpnService } from '../services/vpn';
-import type { Device, Server, PlanStatus } from '../types/vpn';
+import type { Device, Server, PlanStatus, DeviceSecurity } from '../types/vpn';
 import { toast } from 'sonner';
 
 export const useDevices = () => {
@@ -58,25 +58,75 @@ export const useServers = () => {
 export const usePlanStatus = () => {
   const [planStatus, setPlanStatus] = useState<PlanStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
 
-  const fetchPlanStatus = useCallback(async () => {
+  const fetchPlan = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await vpnService.getPlanStatus();
-      setPlanStatus(res);
-      setError(null);
-    } catch (err: any) {
-      setError(err);
-      toast.error('Error al cargar estado del plan: ' + (err.response?.data?.error?.message || err.message));
+      const data = await vpnService.getPlanStatus();
+      setPlanStatus(data);
+    } catch (error) {
+      toast.error('Error al obtener estado del plan');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchPlanStatus();
-  }, [fetchPlanStatus]);
+    fetchPlan();
+  }, [fetchPlan]);
 
-  return { planStatus, loading, error, refetch: fetchPlanStatus };
+  return { planStatus, loading, refetch: fetchPlan };
+};
+
+export const useDeviceSettings = (deviceId: string) => {
+  const [security, setSecurity] = useState<DeviceSecurity | null>(null);
+  const [stealth, setStealth] = useState<{ enabled: boolean; config?: any } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    if (!deviceId) return;
+    try {
+      setLoading(true);
+      const [secData, stealthData] = await Promise.all([
+        vpnService.getDeviceSecurity(deviceId),
+        vpnService.getDeviceStealth(deviceId)
+      ]);
+      setSecurity(secData);
+      setStealth({ enabled: stealthData.enabled, config: stealthData.stealth_config });
+    } catch (error) {
+      console.error('Error loading device settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [deviceId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const updateSecurity = async (data: Partial<DeviceSecurity>) => {
+    try {
+      await vpnService.updateDeviceSecurity(deviceId, data);
+      setSecurity(prev => prev ? { ...prev, ...data } : null);
+      toast.success('Seguridad actualizada');
+    } catch (error) {
+      toast.error('Error al actualizar seguridad');
+    }
+  };
+
+  const toggleStealth = async (enabled: boolean) => {
+    try {
+      if (enabled) {
+        await vpnService.enableDeviceStealth(deviceId);
+      } else {
+        await vpnService.disableDeviceStealth(deviceId);
+      }
+      setStealth(prev => prev ? { ...prev, enabled } : { enabled });
+      toast.success(enabled ? 'Modo Stealth activado' : 'Modo Stealth desactivado');
+    } catch (error) {
+      toast.error('Error al cambiar modo Stealth');
+    }
+  };
+
+  return { security, stealth, loading, updateSecurity, toggleStealth, refetch: fetchData };
 };

@@ -4,6 +4,7 @@ import type { Device, Server } from '../../../../types/vpn';
 import { vpnService } from '../../../../services/vpn';
 import { Smartphone, Monitor, Router as RouterIcon, Download, QrCode, Trash2, Power, Settings } from 'lucide-react';
 import { toast } from 'sonner';
+import { DeviceSettingsModal } from './DeviceSettingsModal';
 
 interface DeviceCardProps {
   device: Device;
@@ -15,6 +16,7 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [qrBase64, setQrBase64] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const connected = device.status === 'active' && !!device.client;
   const currentServerId = device.client?.server_id;
@@ -229,7 +231,7 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
         )}
 
         <button 
-          onClick={() => { /* TODO: Open Settings Modal */ toast.info('Configuración avanzada próximamente'); }} 
+          onClick={() => setIsSettingsOpen(true)} 
           disabled={loading}
           className="flex flex-col items-center justify-center text-slate-600 hover:text-slate-900 transition-colors disabled:opacity-50"
           title={t('dashboard.vpn.settings', 'Opciones')}
@@ -240,6 +242,13 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
           <span className="text-xs mt-1">Ajustes</span>
         </button>
       </div>
+
+      <DeviceSettingsModal 
+        deviceId={device.id} 
+        deviceName={device.name} 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+      />
     </div>
   );
 };

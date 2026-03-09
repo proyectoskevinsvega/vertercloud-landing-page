@@ -38,7 +38,8 @@ export interface PlanStatus {
 export interface DeviceSecurity {
   enable_adblock: boolean;
   enable_malware_filter: boolean;
-  enable_killswitch?: boolean;
+  enable_killswitch: boolean;
+  enable_ip_rotation: boolean;
 }
 
 export interface DeviceStats {
