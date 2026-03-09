@@ -11,6 +11,7 @@ export interface Device {
   created_at: string;
   updated_at: string;
   client?: any; // The VPN connection details if connected
+  is_online?: boolean; // Real-time connection status
 }
 
 export interface Server {

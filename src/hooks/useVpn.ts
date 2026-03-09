@@ -12,7 +12,14 @@ export const useDevices = () => {
     try {
       setLoading(true);
       const res = await vpnService.getDevices();
-      setDevices(Array.isArray(res) ? res : res?.data || []);
+      const rawData = Array.isArray(res) ? res : res?.data || [];
+      const mappedDevices = rawData.map((item: any) => {
+        if (item.device) {
+          return { ...item.device, is_online: item.is_online };
+        }
+        return item;
+      });
+      setDevices(mappedDevices);
       setError(null);
     } catch (err: any) {
       setError(err);

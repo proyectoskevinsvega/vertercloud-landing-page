@@ -18,9 +18,15 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
   const [qrBase64, setQrBase64] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
-  const connected = device.status === 'active' && !!device.client;
+  const connected = (device.status === 'active' && !!device.client) || device.is_online;
   const currentServerId = device.client?.server_id;
   const currentServer = (servers || []).find(s => s.id === currentServerId);
+
+  const getStatusLabel = () => {
+    if (device.is_online) return t('dashboard.vpn.status_online', 'En línea');
+    if (connected) return t('dashboard.vpn.status_connected', 'Conectado');
+    return t('dashboard.vpn.status_disconnected', 'Desconectado');
+  };
 
   const getIcon = () => {
     switch (device.device_type) {
@@ -115,8 +121,8 @@ export const DeviceCard = ({ device, servers, onUpdate }: DeviceCardProps) => {
             <p className="text-sm text-slate-500 capitalize">{device.os_type} • {device.device_type}</p>
           </div>
         </div>
-        <div className={`px-2.5 py-1 rounded-full text-xs font-medium border ${connected ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
-          {connected ? t('dashboard.vpn.status_connected', 'Conectado') : t('dashboard.vpn.status_disconnected', 'Desconectado')}
+        <div className={`px-2.5 py-1 rounded-full text-xs font-medium border ${device.is_online ? 'bg-green-50 text-green-700 border-green-200' : connected ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+          {getStatusLabel()}
         </div>
       </div>
 
